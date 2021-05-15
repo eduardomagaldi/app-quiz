@@ -1,0 +1,19 @@
+.toggle {
+  display: none;
+}
+
+.accordion__content {
+  display: block;
+  border: 1px solid;
+  max-height: 0;
+  transition: max-height .3s;
+  overflow: hidden;
+}
+
+.accordion__checkbox {
+  display: none;
+}
+
+.accordion__checkbox:checked + .accordion__content {
+  max-height: 1000px;
+}

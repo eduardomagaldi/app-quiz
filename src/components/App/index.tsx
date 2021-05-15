@@ -1,14 +1,16 @@
 import './index.css';
 
 import React, { useEffect, useState } from 'react';
-import { getAvailabilities, saveBooking } from '../../services/availabilities';
+import { getAvailabilities } from '../../services/availabilities';
 import { Availability, AvailabilityResponse, Slot } from '../../common/interfaces';
 
 const App: React.FC = () => {
-  const [postalcode, setPostalcode] = useState<string>('');
+  const [postalcode, setPostalcode] = useState<string>('aa');
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
 
   useEffect(() => {
+    console.log('postalcode', postalcode);
+
     if (postalcode) {
       getAvailabilities(postalcode)
         .then((response: AvailabilityResponse): void => {
@@ -49,9 +51,6 @@ const App: React.FC = () => {
 
 const Day: any = (props: any) => {
   function handleClick(time: any) {
-    console.log('time', time);
-    // saveBooking('bla');
-
     return () => {
       return time;
     };

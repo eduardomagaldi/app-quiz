@@ -1,75 +1,40 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
 
-import React, { useEffect, useState } from 'react';
-import { getQuizzes } from '../../services/data';
-import { Quizz } from '../../common/interfaces';
+import React from 'react';
+import PageListQuizzes from './../../pages/ListQuizzes';
+import PageQuizz from './../../pages/Quizz';
+
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 const App: React.FC = () => {
-  const [quizzes, setQuizzes] = useState<Quizz[] | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const result = await getQuizzes();
-      setQuizzes(result);
-    })();
-  }, []);
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-  }
-
-  if (!quizzes) {
-    return (
-      <>
-        <span>Loading...</span>
-      </>
-    );
-  }
-
-  if (!quizzes.length) {
-    return (
-      <>
-        <span>There are no available Quizzes :(</span>
-      </>
-    );
-  }
-
   return (
     <>
-      <input
-        type="text"
-        name="postalcode"
-        onChange={handleChange}
-        maxLength={5}
-      />
+      <div className="container pt-3 pb-3">
+        <h1>
+          <img
+            src="https://uploads-ssl.webflow.com/5fad10eff31430525bd54730/60119d46d6c43627046196b8_Tilda%20Logo%20(1).png"
+            alt="Tilda"
+            title="Tilda"
+          /> Quizzes
+        </h1>
 
-      {quizzes.map((quizz, index) => {
-        return (
-          <div key={index}>
-            {quizz.name}
+        <Router>
+          <div>
+            <Switch>
+              <Route exact path="/">
+                <PageListQuizzes />
+              </Route>
+              <Route path="/quizz/:idQuiz" children={<PageQuizz />} />
+              <Route path="*">
+                <h1>Oops, 404 :(</h1>
+              </Route>
+            </Switch>
           </div>
-        );
-      })}
+        </Router>
+      </div>
     </>
   );
 };
-
-const Day: any = (props: any) => {
-  function handleClick(time: any) {
-    return () => {
-      return time;
-    };
-  }
-
-  return (
-    <label htmlFor={props.index} className="accordion__item">
-      <strong>{props.dateName}</strong>
-      <input type="checkbox" className="accordion__checkbox" id={props.index} />
-
-      <span className="accordion__content">
-
-      </span>
-    </label>
-  );
-}
 
 export default App;

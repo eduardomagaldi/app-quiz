@@ -3,8 +3,7 @@ export interface Quizz {
   name: string;
 }
 
-// export interface Slot {
-//   ISO_time: string;
-//   available_vets: Vet[];
-//   time: string;
-// }
+export interface Question {
+  text: string;
+  answer: string;
+}

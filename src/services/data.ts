@@ -1,27 +1,65 @@
-import { Quizz } from '../common/interfaces';
+
+// interface QueryOptions {
+//   [index: string]: string[]
+// }
+
+
+
+
+
+import { Quizz, Question } from '../common/interfaces';
 
 const url = 'https://tilda-quiz.hasura.app/v1/graphql';
 
 interface QueryOptions {
-  [index: string]: string[]
+  [index: string]: {
+    columns: string[];
+    where?: string;
+  }
 }
 
 interface Response {
   data: any;
 }
 
+export const getQuestions = (idQuiz: string): Promise<Question[]> => {
+  console.log('getQuestions');
+  const param = 'questions';
+  const columns = [
+    'answer',
+    'options',
+    'text',
+    'quiz_id',
+  ];
+
+  const options: QueryOptions = {};
+  options[param] = {
+    columns,
+    where: `where: {quiz_id: {_eq: "${idQuiz}"}}`,
+  };
+
+  return get(options)
+    .then((response: { questions: Question[] }) => {
+      return response?.questions;
+    });
+};
+
 export const getQuizzes = (): Promise<Quizz[]> => {
   const param = 'quizzes';
   const columns = ['id', 'name'];
 
   const options: QueryOptions = {};
-  options[param] = columns;
+  options[param] = {
+    columns,
+  };
 
   return get(options)
     .then((response: { quizzes: Quizz[] }) => {
       return response?.quizzes;
     });
 };
+
+// ---------------------------------
 
 const get = (options: QueryOptions): Promise<any> => {
   return post(
@@ -76,7 +114,9 @@ function makeQuery(options: QueryOptions): QueryObject {
   const queries = [];
 
   for (const prop in options) {
-    let query = `${prop} {\n${options[prop].join('\n')}\n}`;
+    const where = options?.[prop]?.where || '';
+    const whereString = where ? `(${where})` : '';
+    let query = `${prop} ${whereString} {\n${options?.[prop]?.columns?.join('\n')}\n}`;
     queries.push(query);
   }
 

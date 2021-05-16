@@ -1,32 +1,36 @@
 import './index.css';
 
 import React, { useEffect, useState } from 'react';
-import { getAvailabilities } from '../../services/availabilities';
-import { Availability, AvailabilityResponse, Slot } from '../../common/interfaces';
+import { getQuizzes } from '../../services/data';
+import { Quizz } from '../../common/interfaces';
 
 const App: React.FC = () => {
-  const [postalcode, setPostalcode] = useState<string>('aa');
-  const [availabilities, setAvailabilities] = useState<Availability[]>([]);
+  const [quizzes, setQuizzes] = useState<Quizz[] | null>(null);
 
   useEffect(() => {
-    console.log('postalcode', postalcode);
-
-    if (postalcode) {
-      getAvailabilities(postalcode)
-        .then((response: AvailabilityResponse): void => {
-          setAvailabilities(response.items as Availability[]);
-        });
-    }
-  }, [postalcode]);
+    (async () => {
+      const result = await getQuizzes();
+      setQuizzes(result);
+    })();
+  }, []);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const value = event.target.value;
+  }
 
-    if (value.length === 5) {
-      setPostalcode(value);
-    } else {
-      console.error('Incorrect Postalcode');
-    }
+  if (!quizzes) {
+    return (
+      <>
+        <span>Loading...</span>
+      </>
+    );
+  }
+
+  if (!quizzes.length) {
+    return (
+      <>
+        <span>There are no available Quizzes :(</span>
+      </>
+    );
   }
 
   return (
@@ -38,10 +42,10 @@ const App: React.FC = () => {
         maxLength={5}
       />
 
-      {availabilities.map((availability, index) => {
+      {quizzes.map((quizz, index) => {
         return (
           <div key={index}>
-            <Day dateName={availability.date} index={index} slots={availability.slots} />
+            {quizz.name}
           </div>
         );
       })}
@@ -62,14 +66,7 @@ const Day: any = (props: any) => {
       <input type="checkbox" className="accordion__checkbox" id={props.index} />
 
       <span className="accordion__content">
-        {props.slots.map((slot: Slot, index: number) => {
 
-          return (
-            <button key={index} onClick={handleClick(slot.time)}>
-              {slot.time}
-            </button>
-          );
-        })}
       </span>
     </label>
   );

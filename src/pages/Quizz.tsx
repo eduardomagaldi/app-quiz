@@ -1,24 +1,15 @@
-
-
 import React from 'react';
-
 import Questions from '../components/Questions';
 
 import {
-  BrowserRouter as Router,
   Link,
   useLocation,
-  useHistory,
   useParams
 } from "react-router-dom";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
-
-
-
-
 
 const Quizz: React.FC = () => {
   const { idQuiz }: any = useParams();
@@ -31,9 +22,14 @@ const Quizz: React.FC = () => {
       <div className="row">
         <Questions />
 
-        <Link to={`/quizz/${idQuiz}?question=${numberQuestion + 1}`}>
-          Next
-        </Link>
+        <div className="col d-flex justify-content-end">
+          <Link
+            to={`/quizz/${idQuiz}?question=${numberQuestion + 1}`}
+            className="btn btn-primary">
+            Next -{'>'}
+          </Link>
+        </div>
+
       </div>
     </>
   );

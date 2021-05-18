@@ -2,11 +2,8 @@ import React, { useEffect, useReducer } from 'react';
 import { getQuestions } from '../../services/data';
 import { Question } from '../../common/interfaces';
 import './index.css';
-// import {  } from "react-router-dom";
 
 import {
-  BrowserRouter as Router,
-  Link,
   useLocation,
   useHistory
 } from "react-router-dom";
@@ -26,19 +23,8 @@ function reducer(state: any, action: any): any {
   return {
     ...state,
     ...action,
-  }
+  };
 }
-
-// function Questions() {
-//   const [state, dispatch] = useReducer(reducer, initialState);
-//   return (
-//     <>
-//       Count: {state.count}
-//       <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
-//       <button onClick={() => dispatch({ type: 'increment' })}>+</button>
-//     </>
-//   );
-// }
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -108,22 +94,26 @@ const Questions: React.FC = () => {
 
   return (
     <>
-      {/* <h2>{currentQuestion.text}</h2> */}
-      {JSON.stringify(getCurrQuestion())}
-
-      <h1>{getCurrQuestion()?.text}</h1>
-
-
+      <div className="col-12">
+        <h2>{getCurrQuestion()?.text}</h2>
+      </div>
 
       {getCurrQuestion()?.options.split(',').map((option, index) => {
         return (
-          <div className="col-12 mb-4" key={index}>
-            <div
-              className="alert alert-info d-flex justify-content-between"
-              style={{ height: '100%' }}
+          <div className="col-12 mb-1">
+            <label
+              htmlFor={'option' + index}
+              className="alert alert-secondary d-block align-items-center mb-0"
+              key={index}
             >
+              <input
+                type="radio"
+                id={'option' + index}
+                name="response-option"
+                className="me-2"
+              />
               {option}
-            </div>
+            </label>
           </div>
         );
       })}
@@ -132,47 +122,6 @@ const Questions: React.FC = () => {
 }
 
 export default Questions;
-
-
-
-
-
-// export default Questions;
-
-// interface Action {
-//   type: string;
-//   payload: any;
-// }
-
-// interface State {
-//   questions: Question[];
-//   currentQuestion: Question;
-// }
-
-// // function reducer(state: State, action: Action) {
-// //   // The reducer normally looks at the action type field to decide what happens
-// //   switch (action.type) {
-// //     // Do something here based on the different types of actions
-// //     default:
-// //       state.questions = action.payload as Question[];
-// //     // If this reducer doesn't recognize the action type, or doesn't
-// //     // care about this specific action, return the existing state unchanged
-// //     // return state
-// //   }
-// // }
-
-// function reducer(state, action) {
-//   switch (action.type) {
-//     case 'increment':
-//       return { count: state.count + 1 };
-//     case 'decrement':
-//       return { count: state.count - 1 };
-//     default:
-//     // throw new Error();
-//   }
-
-//   return true;
-// }
 
 function sanitize(originalObject: any, fields: string[]): object {
   const sanitized: any = {};

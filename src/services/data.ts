@@ -3,13 +3,7 @@
 //   [index: string]: string[]
 // }
 
-
-
-
-
 import { Quizz, Question } from '../common/interfaces';
-
-const url = 'https://tilda-quiz.hasura.app/v1/graphql';
 
 interface QueryOptions {
   [index: string]: {
@@ -22,25 +16,51 @@ interface Response {
   data: any;
 }
 
+const url = 'https://tilda-quiz.hasura.app/v1/graphql';
+
 export const getQuestions = (idQuiz: string): Promise<Question[]> => {
-  console.log('getQuestions');
-  const param = 'questions';
-  const columns = [
-    'answer',
-    'options',
-    'text',
-  ];
+  let result: Question[] | null = null;
+  const idLocalStorage = `questions-${idQuiz}`;
 
-  const options: QueryOptions = {};
-  options[param] = {
-    columns,
-    where: `where: {quiz_id: {_eq: "${idQuiz}"}}`,
-  };
+  if (localStorage) {
+    result = JSON.parse(localStorage?.getItem(idLocalStorage) as string);
+  }
 
-  return get(options)
-    .then((response: { questions: Question[] }) => {
-      return response?.questions;
-    });
+  if (!result) {
+    const columns = [
+      'answer',
+      'options',
+      'text',
+    ];
+
+    const options: QueryOptions = {};
+    options.questions = {
+      columns,
+      where: `where: {quiz_id: {_eq: "${idQuiz}"}}`,
+    };
+
+    return get(options)
+      .then((response: { questions: Question[] }) => {
+        result = response?.questions;
+
+        if (localStorage && result?.length) {
+          const resultFiltered = result.map((question) => {
+            return filterFields(question, ['answer', 'options', 'text']);
+          });
+
+          localStorage.setItem(
+            idLocalStorage,
+            JSON.stringify(resultFiltered)
+          );
+        }
+
+        return result;
+      });
+  }
+
+  return new Promise((resolve: Function) => {
+    resolve(result);
+  })
 };
 
 export const getQuizzes = (): Promise<Quizz[]> => {
@@ -61,12 +81,8 @@ export const getQuizzes = (): Promise<Quizz[]> => {
 // ---------------------------------
 
 const get = (options: QueryOptions): Promise<any> => {
-  return post(
-    url,
-    makeQuery(options),
-  )
+  return post(url, makeQuery(options))
     .then((response: Response) => {
-      console.log('response post function', response);
       return response?.data;
     });
 };
@@ -128,13 +144,23 @@ function makeQuery(options: QueryOptions): QueryObject {
   return {
     query: templateQuery,
   };
+}
 
-  // query MyQuery {
-  //   questions(where: {quiz_id: {_eq: "53498e5a-3f7e-4f74-88fc-1106451c1dd9"}}) {
-  //     answer
-  //     options
-  //     text
-  //     quiz_id
-  //   }
-  // }
+function filterFields(originalObject: any, fields: string[]): object | null {
+  if (!originalObject) return null;
+  const filtered: any = {};
+
+  console.log('originalObject', originalObject);
+
+  fields.forEach((field) => {
+    const originalValue = originalObject?.[field];
+
+    if (originalValue !== originalObject) {
+      filtered[field] = originalValue;
+    }
+  });
+
+  console.log('filtered', filtered);
+
+  return filtered;
 }

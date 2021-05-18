@@ -8,3 +8,7 @@ export interface Question {
   answer: string;
   options: string;
 }
+
+export interface Params {
+  idQuiz: string;
+}

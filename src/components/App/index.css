@@ -3,3 +3,8 @@
 body {
   font-family: 'Source Sans Pro', sans-serif;
 }
+
+.logo {
+  text-decoration: none;
+  color: inherit;
+}

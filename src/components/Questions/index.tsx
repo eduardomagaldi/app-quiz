@@ -1,73 +1,42 @@
 import React, { useEffect, useReducer } from 'react';
-import { getQuestions } from '../../services/data';
-import { Question } from '../../common/interfaces';
-import './index.css';
-
-import {
-  useLocation,
-  useHistory
-} from "react-router-dom";
-
+import { useLocation, useHistory } from "react-router-dom";
 import { useParams } from 'react-router';
 
-function reducer(state: any, action: any): any {
-  // switch (action.type) {
-  //   case 'increment':
-  //     return { count: state.count + 1 };
-  //   case 'decrement':
-  //     return { count: state.count - 1 };
-  //   default:
-  //     throw new Error();
-  // }
+import { getQuestions } from '../../services/data';
+import { Question, Params } from '../../common/interfaces';
+import './index.css';
 
-  return {
-    ...state,
-    ...action,
-  };
+interface State {
+  questions: Question[];
+  indexQuestion: number;
 }
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+const initialState: State = {
+  questions: [{
+    options: '...,...,...,...',
+    text: '...',
+    answer: '',
+  }],
+  indexQuestion: 0,
+};
 
 const Questions: React.FC = () => {
-  const { idQuiz }: any = useParams();
+  const { idQuiz }: Params = useParams();
   const query = useQuery();
   const indexQuestion = parseInt(query.get('question') || '1', 10) - 1;
   const history = useHistory();
-
-  const initialState = {
-    questions: null,
-    indexQuestion,
-  };
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     (async () => {
-      let result;
-      const idLocalStorage = `questions-${idQuiz}`;
+      dispatch({ ...initialState });
 
-      if (window?.localStorage) {
-        result = JSON.parse(window.localStorage?.getItem(idLocalStorage) as string);
-        console.log('result from localstorage', result);
-      }
+      const result: Question[] = await getQuestions(idQuiz);
 
-      if (!result) {
-        result = await getQuestions(idQuiz);
-        console.log('result fetched', result);
+      console.log('result', result);
 
-        if (window?.localStorage) {
-          window.localStorage?.setItem(
-            idLocalStorage,
-            JSON.stringify(
-              sanitize(result, ['answer', 'options', 'text'])
-            )
-          );
-        }
-      }
-
-      if (!result?.[indexQuestion]) {
+      if (result && result?.length && !result?.[indexQuestion]) {
         history.push('/');
         return '';
       }
@@ -100,11 +69,10 @@ const Questions: React.FC = () => {
 
       {getCurrQuestion()?.options.split(',').map((option, index) => {
         return (
-          <div className="col-12 mb-1">
+          <div className="col-12 mb-1" key={index}>
             <label
               htmlFor={'option' + index}
               className="alert alert-secondary d-block align-items-center mb-0"
-              key={index}
             >
               <input
                 type="radio"
@@ -123,16 +91,13 @@ const Questions: React.FC = () => {
 
 export default Questions;
 
-function sanitize(originalObject: any, fields: string[]): object {
-  const sanitized: any = {};
+function reducer(state: State, action: State): State {
+  return {
+    ...state,
+    ...action,
+  };
+}
 
-  fields.forEach((field) => {
-    const originalValue = originalObject[field];
-
-    if (originalValue !== originalObject) {
-      sanitized[field] = originalValue;
-    }
-  });
-
-  return sanitized;
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
 }

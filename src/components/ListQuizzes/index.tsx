@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { getQuizzes } from '../../services/data';
 import { Quizz } from '../../common/interfaces';
 import './index.css';
-import {
-  Link,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
+
+const quizzEmpty = {
+  id: '',
+  name: '...',
+};
 
 const ListQuizzes: React.FC = () => {
-  const [quizzes, setQuizzes] = useState<Quizz[] | null>(null);
+  const [quizzes, setQuizzes] = useState<Quizz[] | null>([quizzEmpty, quizzEmpty, quizzEmpty]);
 
   useEffect(() => {
     (async () => {
@@ -47,9 +50,9 @@ const ListQuizzes: React.FC = () => {
 
               <Link
                 to={`/quizz/${quizz.id}?question=1`}
-                className="btn btn-primary align-self-end"
+                className={`btn btn-primary align-self-end ${!quizz.id ? 'disabled' : ''}`}
               >
-                Start | Redo
+                Start&nbsp;|&nbsp;Redo
               </Link>
             </div>
           </div>

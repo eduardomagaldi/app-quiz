@@ -6,4 +6,5 @@ export interface Quizz {
 export interface Question {
   text: string;
   answer: string;
+  options: string;
 }

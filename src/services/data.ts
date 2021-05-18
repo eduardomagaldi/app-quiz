@@ -29,7 +29,6 @@ export const getQuestions = (idQuiz: string): Promise<Question[]> => {
     'answer',
     'options',
     'text',
-    'quiz_id',
   ];
 
   const options: QueryOptions = {};

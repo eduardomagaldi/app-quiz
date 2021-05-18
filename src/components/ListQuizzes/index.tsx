@@ -46,7 +46,7 @@ const ListQuizzes: React.FC = () => {
               </div>
 
               <Link
-                to={`/quizz/${quizz.id}`}
+                to={`/quizz/${quizz.id}?question=1`}
                 className="btn btn-primary align-self-end"
               >
                 Start | Redo

@@ -4,7 +4,6 @@ import { useParams } from 'react-router';
 
 import { getQuestions, getQuizzes, saveAnswer } from '../../services/data';
 import { Question, Params, QuizzesById } from '../../common/interfaces';
-import './index.css';
 import Header from '../Header';
 
 interface State {

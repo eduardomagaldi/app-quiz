@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getQuizzes } from '../../services/data';
 import { Quizz, QuizzesById } from '../../common/interfaces';
-import './index.css';
 import { Link } from "react-router-dom";
 import Score from '../Score';
 

@@ -63,19 +63,90 @@ export const getQuestions = (idQuiz: string): Promise<Question[]> => {
   })
 };
 
+// export const getQuizzes = (idQuiz: string): Promise<Question[]> => {
+//   let result: Question[] | null = null;
+//   const idLocalStorage = `questions-${idQuiz}`;
+
+//   if (localStorage) {
+//     result = JSON.parse(localStorage?.getItem(idLocalStorage) as string);
+//   }
+
+//   if (!result) {
+//     const columns = [
+//       'answer',
+//       'options',
+//       'text',
+//     ];
+
+//     const options: QueryOptions = {};
+//     options.questions = {
+//       columns,
+//       where: `where: {quiz_id: {_eq: "${idQuiz}"}}`,
+//     };
+
+//     return get(options)
+//       .then((response: { questions: Question[] }) => {
+//         result = response?.questions;
+
+//         if (localStorage && result?.length) {
+//           const resultFiltered = result.map((question) => {
+//             return filterFields(question, ['answer', 'options', 'text']);
+//           });
+
+//           localStorage.setItem(
+//             idLocalStorage,
+//             JSON.stringify(resultFiltered)
+//           );
+//         }
+
+//         return result;
+//       });
+//   }
+
+//   return new Promise((resolve: Function) => {
+//     resolve(result);
+//   })
+// };
+
 export const getQuizzes = (): Promise<Quizz[]> => {
-  const param = 'quizzes';
-  const columns = ['id', 'name'];
+  let result: Quizz[] | null = null;
+  const idLocalStorage = 'quizzes';
 
-  const options: QueryOptions = {};
-  options[param] = {
-    columns,
-  };
+  if (localStorage) {
+    result = JSON.parse(localStorage?.getItem(idLocalStorage) as string);
+  }
 
-  return get(options)
-    .then((response: { quizzes: Quizz[] }) => {
-      return response?.quizzes;
-    });
+  if (!result) {
+    const param = 'quizzes';
+    const columns = ['id', 'name'];
+
+    const options: QueryOptions = {};
+    options[param] = {
+      columns,
+    };
+
+    return get(options)
+      .then((response: { quizzes: Quizz[] }) => {
+        result = response?.quizzes;
+
+        if (localStorage && result?.length) {
+          const resultFiltered = result.map((question) => {
+            return filterFields(question, ['id', 'name']);
+          });
+
+          localStorage.setItem(
+            idLocalStorage,
+            JSON.stringify(getQuizzesById(resultFiltered as Quizz[]))
+          );
+        }
+
+        return result;
+      });
+  }
+
+  return new Promise((resolve: Function) => {
+    resolve(result);
+  })
 };
 
 // ---------------------------------
@@ -159,4 +230,22 @@ function filterFields(originalObject: any, fields: string[]): object | null {
   });
 
   return filtered;
+}
+
+interface QuizzesById {
+  [id: string]: {
+    name: string
+  }
+}
+
+function getQuizzesById(quizzesList: Quizz[]): QuizzesById {
+  const quizzesById: QuizzesById = {};
+
+  quizzesList.forEach((quizz: Quizz) => {
+    quizzesById[quizz.id] = {
+      name: quizz.name,
+    }
+  });
+
+  return quizzesById;
 }

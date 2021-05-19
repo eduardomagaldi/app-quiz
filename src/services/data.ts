@@ -1,4 +1,4 @@
-import { Quizz, Question, QuizzesById } from '../common/interfaces';
+import { Quizz, Question, QuizzesById, Answer } from '../common/interfaces';
 
 interface QueryOptions {
   [index: string]: {
@@ -13,7 +13,7 @@ interface Response {
 
 const url: string = 'https://tilda-quiz.hasura.app/v1/graphql';
 
-export const getQuestions = (idQuiz: string): Promise<Question[]> => {
+export const getQuestions = (idQuiz: string, localOnly?: boolean): Promise<Question[]> => {
   let result: Question[] | null = null;
   const idLocalStorage = `questions-${idQuiz}`;
 
@@ -21,7 +21,7 @@ export const getQuestions = (idQuiz: string): Promise<Question[]> => {
     result = JSON.parse(localStorage?.getItem(idLocalStorage) as string);
   }
 
-  if (!result) {
+  if (!result && !localOnly) {
     const columns: string[] = [
       'answer',
       'options',
@@ -97,6 +97,23 @@ export const getQuizzes = (): Promise<QuizzesById> => {
   return new Promise((resolve: Function) => {
     resolve(result);
   })
+};
+
+export const saveAnswer = ({ answer, correct, idQuiz, indexQuestion }: any): void => {
+  const idLocalStorage = `answers-${idQuiz}`;
+  const answers: Answer[] = getAnswers(idQuiz) || [];
+
+  answers[indexQuestion] = {
+    answer,
+    correct,
+  };
+
+  if (localStorage) {
+    localStorage.setItem(
+      idLocalStorage,
+      JSON.stringify(answers),
+    );
+  }
 };
 
 // ---------------------------------
@@ -188,8 +205,38 @@ function getQuizzesById(quizzesList: Quizz[]): QuizzesById {
   quizzesList.forEach((quizz: Quizz) => {
     quizzesById[quizz.id] = {
       name: quizz.name,
-    }
+    };
   });
 
   return quizzesById;
 }
+
+export function getScore(idQuiz: string): string | null {
+  if (!idQuiz) {
+    return null;
+  }
+
+  const answers = getAnswers(idQuiz);
+
+  if (answers?.length) {
+    const correct = answers.filter((answer: Answer) => {
+      return answer.correct;
+    });
+
+    return correct.length;
+  }
+
+  return null;
+};
+
+function getAnswers(idQuiz: string): any {
+  let result: Answer[] | null = null;
+
+  const idLocalStorage = `answers-${idQuiz}`;
+
+  if (localStorage) {
+    result = JSON.parse(localStorage?.getItem(idLocalStorage) as string);
+  }
+
+  return result;
+};

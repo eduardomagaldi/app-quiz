@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import { useLocation, useHistory } from "react-router-dom";
 import { useParams } from 'react-router';
 
-import { getQuestions, getQuizzes } from '../../services/data';
+import { getQuestions, getQuizzes, saveAnswer } from '../../services/data';
 import { Question, Params, QuizzesById } from '../../common/interfaces';
 import './index.css';
 import Header from '../Header';
@@ -35,10 +35,6 @@ const Questions: React.FC = () => {
     (async () => {
       dispatch({ ...initialState });
 
-      // let result: any[] = [];
-
-      console.log(await getQuizzes());
-
       const result: any = await Promise.all([
         getQuestions(idQuiz),
         getQuizzes(),
@@ -47,14 +43,10 @@ const Questions: React.FC = () => {
       const questions = result[0];
       const quizzesById = result[1];
 
-      // const result: Question[] = await getQuestions(idQuiz);
-
-      if (result && result?.length && !result?.[indexQuestion]) {
+      if (questions?.length && !questions?.[indexQuestion]) {
         history.push('/');
         return '';
       }
-
-
 
       dispatch({
         indexQuestion,
@@ -64,17 +56,19 @@ const Questions: React.FC = () => {
     })();
   }, [idQuiz, indexQuestion, history]);
 
-  // function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-  // }
-
-  // if (!state.currentQuestion) {
-  //   return (
-  //     <span>Loading...</span>
-  //   );
-  // }
-
   const getCurrQuestion = (): Question => {
     return state?.questions?.[state?.indexQuestion];
+  }
+
+  const onOptionChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const newValue: string = e.currentTarget.value;
+
+    saveAnswer({
+      indexQuestion,
+      idQuiz,
+      answer: newValue,
+      correct: getCurrQuestion()?.answer === newValue
+    })
   }
 
   return (
@@ -89,14 +83,16 @@ const Questions: React.FC = () => {
         return (
           <div className="col-12 mb-1" key={index}>
             <label
-              htmlFor={'option' + index}
+              htmlFor={generateIdHtml(index.toString(), idQuiz)}
               className="alert alert-secondary d-block align-items-center mb-0"
             >
               <input
                 type="radio"
-                id={'option' + index}
+                id={generateIdHtml(index.toString(), idQuiz)}
                 name="response-option"
                 className="me-2"
+                onChange={onOptionChange}
+                value={option}
               />
               {option}
             </label>
@@ -118,4 +114,8 @@ function reducer(state: State, action: State): State {
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
+}
+
+function generateIdHtml(index: string, idQuiz: string) {
+  return `option-${index}-${idQuiz}`;
 }

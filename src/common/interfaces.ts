@@ -13,8 +13,18 @@ export interface Params {
   idQuiz: string;
 }
 
+interface Score {
+
+}
+
 export interface QuizzesById {
   [id: string]: {
-    name: string
+    name: string;
+    score?: Score;
   }
+}
+
+export interface Answer {
+  answer: string;
+  correct: boolean;
 }

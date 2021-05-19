@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getQuizzes } from '../../services/data';
-import { Quizz } from '../../common/interfaces';
+import { getQuestions, getQuizzes } from '../../services/data';
+import { Quizz, QuizzesById } from '../../common/interfaces';
 import './index.css';
 import { Link } from "react-router-dom";
+import Score from '../Score';
 
 const quizzEmpty = {
   id: '',
@@ -14,9 +15,8 @@ const ListQuizzes: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      let quizzesById = await getQuizzes();
-
-      const result = [];
+      let quizzesById: QuizzesById = await getQuizzes();
+      const result: Quizz[] = [];
 
       for (const idQuizz in quizzesById) {
         result.push({
@@ -25,20 +25,17 @@ const ListQuizzes: React.FC = () => {
         });
       }
 
-      setQuizzes(result);
+      setQuizzes(result as Quizz[]);
     })();
   }, []);
 
-  // function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-  // }
-
   if (!quizzes) {
     return (
-      <span>Loading...</span>
+      <span>There are no available Quizzes :(</span>
     );
   }
 
-  if (!quizzes.length) {
+  if (quizzes && !quizzes.length) {
     return (
       <span>There are no available Quizzes :(</span>
     );
@@ -46,7 +43,7 @@ const ListQuizzes: React.FC = () => {
 
   return (
     <>
-      {quizzes.map((quizz, index) => {
+      {(quizzes as Quizz[]).map((quizz, index) => {
         return (
           <div className="col-12 col-md-6 mb-4" key={index}>
             <div
@@ -55,7 +52,7 @@ const ListQuizzes: React.FC = () => {
             >
               <div>
                 <h2>{quizz.name}</h2>
-                <p><strong>Score:</strong> 8/10</p>
+                <Score idQuizz={quizz.id} />
               </div>
 
               <Link

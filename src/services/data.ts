@@ -150,8 +150,6 @@ function filterFields(originalObject: any, fields: string[]): object | null {
   if (!originalObject) return null;
   const filtered: any = {};
 
-  console.log('originalObject', originalObject);
-
   fields.forEach((field) => {
     const originalValue = originalObject?.[field];
 
@@ -159,8 +157,6 @@ function filterFields(originalObject: any, fields: string[]): object | null {
       filtered[field] = originalValue;
     }
   });
-
-  console.log('filtered', filtered);
 
   return filtered;
 }

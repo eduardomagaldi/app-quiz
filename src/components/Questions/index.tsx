@@ -5,6 +5,7 @@ import { useParams } from 'react-router';
 import { getQuestions } from '../../services/data';
 import { Question, Params } from '../../common/interfaces';
 import './index.css';
+import Header from '../Header';
 
 interface State {
   questions: Question[];
@@ -63,6 +64,8 @@ const Questions: React.FC = () => {
 
   return (
     <>
+      <Header text="bla" />
+
       <div className="col-12">
         <h2>{getCurrQuestion()?.text}</h2>
       </div>

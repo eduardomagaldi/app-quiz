@@ -1,12 +1,15 @@
 
 
 import React from 'react';
-import ListQuizzes from './../components/ListQuizzes';
+import Header from '../components/Header';
+import ListQuizzes from '../components/ListQuizzes';
 
 const PageListQuizzes: React.FC = () => {
   return (
     <>
       <div className="row">
+        <Header />
+
         <ListQuizzes />
       </div>
     </>

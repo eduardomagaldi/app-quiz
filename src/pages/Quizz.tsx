@@ -14,22 +14,38 @@ function useQuery() {
 const Quizz: React.FC = () => {
   const { idQuiz }: any = useParams();
 
-  const query = useQuery();
-  const numberQuestion = parseInt(query.get('question') || '1', 10);
+  const query: URLSearchParams = useQuery();
+  const numberQuestion: number = parseInt(query.get('question') || '1', 10);
+  const numberQuestionNext: number = numberQuestion + 1;
+  const numberQuestionPrev: number = numberQuestion - 1;
 
   return (
     <>
       <div className="row">
-        <Questions />
-
-        <div className="col d-flex justify-content-end">
-          <Link
-            to={`/quizz/${idQuiz}?question=${numberQuestion + 1}`}
-            className="btn btn-primary">
-            Next -{'>'}
-          </Link>
+        <div className="col">
+          <a
+            href="/"
+            className="btn btn-light"
+          >
+            ←
+          </a>
         </div>
 
+        <Questions />
+
+        <div className="col d-flex justify-content-between">
+          <Link
+            to={`/quizz/${idQuiz}?question=${numberQuestionPrev}`}
+            className={`btn ${!numberQuestionPrev ? 'btn-outline-secondary disabled' : 'btn-primary'}`}>
+            ← Back
+          </Link>
+
+          <Link
+            to={`/quizz/${idQuiz}?question=${numberQuestionNext}`}
+            className="btn btn-primary">
+            Next →
+          </Link>
+        </div>
       </div>
     </>
   );

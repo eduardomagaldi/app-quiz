@@ -83,17 +83,18 @@ const Questions: React.FC = () => {
         return (
           <div className="col-12 mb-1" key={index}>
             <label
-              htmlFor={generateIdHtml(index.toString(), idQuiz)}
+              htmlFor={generateIdHtml(indexQuestion.toString(), index.toString(), idQuiz)}
               className="alert alert-secondary d-block align-items-center mb-0"
             >
-              <input
+              {getCurrQuestion()?.answer && <input
                 type="radio"
-                id={generateIdHtml(index.toString(), idQuiz)}
+                id={generateIdHtml(indexQuestion.toString(), index.toString(), idQuiz)}
                 name="response-option"
                 className="me-2"
                 onChange={onOptionChange}
                 value={option}
-              />
+              />}
+
               {option}
             </label>
           </div>
@@ -116,6 +117,6 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-function generateIdHtml(index: string, idQuiz: string) {
-  return `option-${index}-${idQuiz}`;
+function generateIdHtml(indexQuestion: string, index: string, idQuiz: string) {
+  return `option-${index}-${indexQuestion}-${idQuiz}`;
 }

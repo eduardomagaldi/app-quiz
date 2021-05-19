@@ -19,7 +19,7 @@ const Score: React.FC<ScoreProps> = ({ idQuizz }: ScoreProps) => {
     })();
   }, [idQuizz]);
 
-  if (!idQuizz || !score) {
+  if (!idQuizz || score === null) {
     return <p>Not started.</p>
   }
 

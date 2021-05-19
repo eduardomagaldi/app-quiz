@@ -220,7 +220,7 @@ export function getScore(idQuiz: string): string | null {
 
   if (answers?.length) {
     const correct = answers.filter((answer: Answer) => {
-      return answer.correct;
+      return answer?.correct;
     });
 
     return correct.length;

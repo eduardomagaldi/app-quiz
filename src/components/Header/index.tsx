@@ -1,4 +1,4 @@
-import React, { Props } from 'react';
+import React from 'react';
 
 interface HeaderProps {
   text?: string;

@@ -13,14 +13,9 @@ export interface Params {
   idQuiz: string;
 }
 
-interface Score {
-
-}
-
 export interface QuizzesById {
   [id: string]: {
     name: string;
-    score?: Score;
   }
 }
 

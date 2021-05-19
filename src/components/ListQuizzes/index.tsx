@@ -14,7 +14,17 @@ const ListQuizzes: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const result = await getQuizzes();
+      let quizzesById = await getQuizzes();
+
+      const result = [];
+
+      for (const idQuizz in quizzesById) {
+        result.push({
+          ...quizzesById[idQuizz],
+          id: idQuizz,
+        });
+      }
+
       setQuizzes(result);
     })();
   }, []);

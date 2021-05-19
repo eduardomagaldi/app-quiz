@@ -1,9 +1,4 @@
-
-// interface QueryOptions {
-//   [index: string]: string[]
-// }
-
-import { Quizz, Question } from '../common/interfaces';
+import { Quizz, Question, QuizzesById } from '../common/interfaces';
 
 interface QueryOptions {
   [index: string]: {
@@ -16,7 +11,7 @@ interface Response {
   data: any;
 }
 
-const url = 'https://tilda-quiz.hasura.app/v1/graphql';
+const url: string = 'https://tilda-quiz.hasura.app/v1/graphql';
 
 export const getQuestions = (idQuiz: string): Promise<Question[]> => {
   let result: Question[] | null = null;
@@ -27,7 +22,7 @@ export const getQuestions = (idQuiz: string): Promise<Question[]> => {
   }
 
   if (!result) {
-    const columns = [
+    const columns: string[] = [
       'answer',
       'options',
       'text',
@@ -63,62 +58,17 @@ export const getQuestions = (idQuiz: string): Promise<Question[]> => {
   })
 };
 
-// export const getQuizzes = (idQuiz: string): Promise<Question[]> => {
-//   let result: Question[] | null = null;
-//   const idLocalStorage = `questions-${idQuiz}`;
-
-//   if (localStorage) {
-//     result = JSON.parse(localStorage?.getItem(idLocalStorage) as string);
-//   }
-
-//   if (!result) {
-//     const columns = [
-//       'answer',
-//       'options',
-//       'text',
-//     ];
-
-//     const options: QueryOptions = {};
-//     options.questions = {
-//       columns,
-//       where: `where: {quiz_id: {_eq: "${idQuiz}"}}`,
-//     };
-
-//     return get(options)
-//       .then((response: { questions: Question[] }) => {
-//         result = response?.questions;
-
-//         if (localStorage && result?.length) {
-//           const resultFiltered = result.map((question) => {
-//             return filterFields(question, ['answer', 'options', 'text']);
-//           });
-
-//           localStorage.setItem(
-//             idLocalStorage,
-//             JSON.stringify(resultFiltered)
-//           );
-//         }
-
-//         return result;
-//       });
-//   }
-
-//   return new Promise((resolve: Function) => {
-//     resolve(result);
-//   })
-// };
-
-export const getQuizzes = (): Promise<Quizz[]> => {
-  let result: Quizz[] | null = null;
-  const idLocalStorage = 'quizzes';
+export const getQuizzes = (): Promise<QuizzesById> => {
+  let result: QuizzesById | Quizz[] | null = null;
+  const idLocalStorage: string = 'quizzesById';
 
   if (localStorage) {
     result = JSON.parse(localStorage?.getItem(idLocalStorage) as string);
   }
 
   if (!result) {
-    const param = 'quizzes';
-    const columns = ['id', 'name'];
+    const param: string = 'quizzes';
+    const columns: string[] = ['id', 'name'];
 
     const options: QueryOptions = {};
     options[param] = {
@@ -126,17 +76,17 @@ export const getQuizzes = (): Promise<Quizz[]> => {
     };
 
     return get(options)
-      .then((response: { quizzes: Quizz[] }) => {
+      .then((response: { quizzes: QuizzesById }) => {
         result = response?.quizzes;
 
-        if (localStorage && result?.length) {
-          const resultFiltered = result.map((question) => {
-            return filterFields(question, ['id', 'name']);
-          });
+        if (Array.isArray(result)) {
+          result = getQuizzesById(result);
+        }
 
+        if (localStorage && result) {
           localStorage.setItem(
             idLocalStorage,
-            JSON.stringify(getQuizzesById(resultFiltered as Quizz[]))
+            JSON.stringify(result),
           );
         }
 
@@ -230,12 +180,6 @@ function filterFields(originalObject: any, fields: string[]): object | null {
   });
 
   return filtered;
-}
-
-interface QuizzesById {
-  [id: string]: {
-    name: string
-  }
 }
 
 function getQuizzesById(quizzesList: Quizz[]): QuizzesById {

@@ -12,3 +12,9 @@ export interface Question {
 export interface Params {
   idQuiz: string;
 }
+
+export interface QuizzesById {
+  [id: string]: {
+    name: string
+  }
+}

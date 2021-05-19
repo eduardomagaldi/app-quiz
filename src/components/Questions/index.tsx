@@ -2,14 +2,15 @@ import React, { useEffect, useReducer } from 'react';
 import { useLocation, useHistory } from "react-router-dom";
 import { useParams } from 'react-router';
 
-import { getQuestions } from '../../services/data';
-import { Question, Params } from '../../common/interfaces';
+import { getQuestions, getQuizzes } from '../../services/data';
+import { Question, Params, QuizzesById } from '../../common/interfaces';
 import './index.css';
 import Header from '../Header';
 
 interface State {
   questions: Question[];
   indexQuestion: number;
+  quizzesById: QuizzesById | null,
 }
 
 const initialState: State = {
@@ -19,6 +20,7 @@ const initialState: State = {
     answer: '',
   }],
   indexQuestion: 0,
+  quizzesById: null,
 };
 
 const Questions: React.FC = () => {
@@ -33,18 +35,31 @@ const Questions: React.FC = () => {
     (async () => {
       dispatch({ ...initialState });
 
-      const result: Question[] = await getQuestions(idQuiz);
+      // let result: any[] = [];
 
-      console.log('result', result);
+      console.log(await getQuizzes());
+
+      const result: any = await Promise.all([
+        getQuestions(idQuiz),
+        getQuizzes(),
+      ]);
+
+      const questions = result[0];
+      const quizzesById = result[1];
+
+      // const result: Question[] = await getQuestions(idQuiz);
 
       if (result && result?.length && !result?.[indexQuestion]) {
         history.push('/');
         return '';
       }
 
+
+
       dispatch({
         indexQuestion,
-        questions: result,
+        questions,
+        quizzesById,
       });
     })();
   }, [idQuiz, indexQuestion, history]);
@@ -64,13 +79,13 @@ const Questions: React.FC = () => {
 
   return (
     <>
-      <Header text="bla" />
+      <Header text={state?.quizzesById?.[idQuiz]?.name || ''} />
 
       <div className="col-12">
         <h2>{getCurrQuestion()?.text}</h2>
       </div>
 
-      {getCurrQuestion()?.options.split(',').map((option, index) => {
+      {getCurrQuestion()?.options?.split(',').map((option, index) => {
         return (
           <div className="col-12 mb-1" key={index}>
             <label

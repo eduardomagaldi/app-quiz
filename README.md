@@ -6,6 +6,7 @@
 1. Run ```npm install```.
 1. Run ```npm start```.
 1. Navigate to [http://localhost:3000/](http://localhost:3000/).
+1. For running end to end test, keep ```npm start``` running and run ```npm test``` on another window.
 
 ## Comments
 

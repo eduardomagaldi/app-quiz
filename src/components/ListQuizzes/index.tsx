@@ -46,7 +46,7 @@ const ListQuizzes: React.FC = () => {
         return (
           <div className="col-12 col-md-6 mb-4" key={index}>
             <div
-              className="alert alert-info d-flex justify-content-between"
+              className="js_card__quizz alert alert-info d-flex justify-content-between"
               style={{ height: '100%' }}
             >
               <div>
